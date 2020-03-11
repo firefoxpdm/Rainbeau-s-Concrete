@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using RimWorld;
 using System;
 using System.Collections.Generic;
@@ -12,12 +12,12 @@ namespace RFFConcrete_Code {
 	[StaticConstructorOnStartup]
 	internal static class RFFConcrete_Initializer {
 		static RFFConcrete_Initializer() {
-			HarmonyInstance harmony = HarmonyInstance.Create("net.rainbeau.rimworld.mod.rffconcrete");
+			Harmony harmony = new Harmony("net.rainbeau.rimworld.mod.rffconcrete");
 			harmony.PatchAll( Assembly.GetExecutingAssembly() );
 		}
 	}
 
-	[HarmonyPatch(typeof(GenLeaving), "DoLeavingsFor", new Type[] { typeof(TerrainDef), typeof(IntVec3), typeof(Map) })]
+    [HarmonyPatch(typeof(GenLeaving), "DoLeavingsFor", new Type[] { typeof(TerrainDef), typeof(IntVec3), typeof(Map) })]
 	public static class GenLeaving_DoLeavingsFor_Floors {
 		public static bool Prefix(TerrainDef terrain, IntVec3 cell, Map map) {
 			if (terrain == TerrainDef.Named("Concrete") || terrain == TerrainDef.Named("PavedTile")) {
@@ -29,7 +29,7 @@ namespace RFFConcrete_Code {
 		}
 	}
 
-	[HarmonyPatch(typeof(GenLeaving), "DoLeavingsFor", new Type[] { typeof(Thing), typeof(Map), typeof(DestroyMode), typeof(CellRect), typeof(Predicate<IntVec3>) })]
+	[HarmonyPatch(typeof(GenLeaving), "DoLeavingsFor", new Type[] { typeof(Thing), typeof(Map), typeof(DestroyMode), typeof(CellRect), typeof(Predicate<IntVec3>), typeof(List<Thing>) })]
 	public static class GenLeaving_DoLeavingsFor_Walls {
 		public static bool Prefix(Thing diedThing, Map map, DestroyMode mode, CellRect leavingsRect, Predicate<IntVec3> nearPlaceValidator = null) {
 			if ((diedThing.def.defName == "RFFConcreteDoor")
